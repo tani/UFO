@@ -29,7 +29,7 @@ $ ufo install https://raw.githubusercontent.com/ta2gch/UFO/master/ufo.ros
 ```
 $ cd ~/.roswell/bin
 $ wget https://raw.githubusercontent.com/ta2gch/UFO/master/ufo.ros
-$ ros build ufo.ros
+$ ros build ufo.ros && rm ufo.ros
 ```
 ## Requirements
 
