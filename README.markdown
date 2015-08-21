@@ -22,7 +22,8 @@ $ ufo uninstall clhs
 
 ```shell
 $ ufo install gist://fukamachi/clhs.ros
-$ ufo install https://raw.githubusercontent.com/ta2gch/UFO/master/ufo.ros
+$ ufo install https://raw.githubusercontent.com/ta2gch/UFO/master/ufo.ros # HEAD
+$ ufo install gist://ta2gch/ufo.ros # stable
 ```
 ## Installation
 
