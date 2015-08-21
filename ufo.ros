@@ -55,7 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 (let ((dist (format nil "~~/.roswell/bin/~a" exe)))
 	   (rename-file exe dist))
 	 (uiop:delete-file-if-exists filename)
-	 (return nil)))))
+	 (return-from install-gist nil)))))
   (error (make-instance 'not-found)))
 
 (defun install-file (pkg)
