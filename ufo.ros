@@ -1,0 +1,116 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+
+(ql:quickload
+ '(:cl-gists
+   :dexador
+   :uiop
+   :cl-ppcre)
+ :silent t)
+
+(define-condition not-found (simple-error) ())
+(define-condition illegal-argument (simple-error)())
+(define-condition not-ros-script (simple-error) ())
+
+(defun download (url dist)
+  (with-open-file (file dist
+			:direction :io
+			:if-does-not-exist :create
+			:if-exists :supersede
+			:element-type '(unsigned-byte 8))
+    (let ((input (dex:get url :want-stream t :force-binary t)))
+      (do ((byte (read-byte input nil nil) (read-byte input nil nil)))
+	  ((not byte))
+	(write-byte byte file)))))
+    
+(defun install-gist (pkg)
+  (ppcre:register-groups-bind
+   (user filename exe) ("(.+)/((.+)\\.ros)$" pkg)
+   (dolist (gist (cl-gists:list-gists :username user))
+     (dolist (file (cl-gists:gist-files gist))
+       (when (string= (cl-gists:file-name file) filename)
+	 (let ((url (cl-gists:file-raw-url file)))
+	   (download url filename))
+	 (uiop:run-program `("ros" "build" ,filename))
+	 (let ((dist (format nil "~~/.roswell/bin/~a" exe)))
+	   (rename-file exe dist))
+	 (uiop:delete-file-if-exists filename)
+	 (return nil)))))
+  (error (make-instance 'not-found)))
+
+(defun install-file (pkg)
+  (unless (ppcre:scan "\\.ros$" pkg)
+    (error (make-instance 'not-ros-script)))
+  (unless (probe-file pkg)
+    (error (make-instance 'not-found)))
+  (uiop:run-program `("ros" "build" ,pkg))
+  (let* ((exe (ppcre:regex-replace "\\.ros$" pkg ""))
+	 (cmd (ppcre:regex-replace "^.+/(.+)\\.ros$" pkg "\\1"))
+	 (dist (format nil "~~/.roswell/bin/~a" cmd)))
+    (rename-file exe dist)))
+
+(defun install-http (url)
+  (ppcre:register-groups-bind
+   (filename exe) ("((([^/]+)\\.ros))" url)
+   (download url filename)
+   (uiop:run-program `("ros" "build" ,filename))
+   (let ((dist (format nil "~~/.roswell/bin/~a" exe)))
+     (rename-file exe dist))
+   (uiop:delete-file-if-exists filename))
+  (error (make-instance 'not-found)))
+
+(defun uninstall (pkg)
+  (let ((path (format nil "~~/.roswell/bin/~a" pkg)))
+    (uiop:delete-file-if-exists path)))
+
+(defun parse-url (url)
+  (multiple-value-call
+      (lambda (fst scnd)
+	(declare (ignore fst))
+	(values (elt scnd 0) (elt scnd 1)))
+    (if (ppcre:scan "^(gist|file|https?)://." url)
+	(ppcre:scan-to-strings
+	 "^(gist|file|https?)://(.+)$" url)
+	(progn
+	  (format *error-output* "Unkown Protocol: ~a~%" url)
+	  (uiop:quit 1)))))
+
+(defun main (&rest argv)
+  (declare (ignorable argv))
+  (handler-case
+      (progn
+	(unless (= (length argv) 2)
+	  (error (make-instance 'illegal-argument)))
+	(cond ((string= (first argv) "install")
+	       (multiple-value-bind (prot pkg)
+		   (parse-url (second argv))
+		 (cond
+		   ((string= prot "gist")
+		    (install-gist pkg))
+		   ((string= prot "file")
+		    (install-file pkg))
+		   ((string= prot "https")
+		    (install-http (second argv)))
+		   ((string= prot "http")
+		    (install-http (second argv))))))
+	      ((string= (first argv) "uninstall")
+	       (uninstall (second argv)))
+	      (t (error (make-instance 'illegal-argument)))))
+    (not-ros-script ()
+      (format *error-output* "~a is not a Roswell script~%" (second argv))
+      (uiop:quit 1))
+    (illegal-argument ()
+      (format *error-output* "Illeagal Argument: ~{~a ~}~%" argv)
+      (uiop:quit 1))
+    (dex:http-request-failed ()
+      (format *error-output* "Not found: ~a~%" (second argv))
+      (uiop:quit 1))
+    (usocket:ns-host-not-found-error ()
+      (format *error-output* "Not found: ~a~%" (second argv))
+      (uiop:quit 1))
+    (not-found ()
+      (format *error-output* "Not found: ~a~%" (second argv))
+      (uiop:quit 1))))
