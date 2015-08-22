@@ -1,7 +1,7 @@
 #!/bin/sh
 #|-*- mode:lisp -*-|#
 #|
-exec ros -Q -- $0 "$@"
+exec ros -L sbcl-bin -Q -- $0 "$@"
 |#
 
 #|
@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (ql:quickload
  '(:cl-gists
-   :dexador
+   #-ros.init :dexador
    :uiop
    :cl-ppcre)
  :silent t)
@@ -31,8 +31,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (define-condition not-found (simple-error) ())
 (define-condition illegal-argument (simple-error)())
 (define-condition not-ros-script (simple-error) ())
+(defvar *bin-install-base-path* (user-homedir-pathname))
 
 (defun download (url dist)
+  #+ros.init(ros:roswell `("roswell-internal-use" "download" ,url ,dist) :interactive nil)
+  #-ros.init
   (with-open-file (file dist
 			:direction :io
 			:if-does-not-exist :create
@@ -43,6 +46,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	  ((not byte))
 	(write-byte byte file)))))
     
+(defun r (&optional (p ""))
+  (format nil "~A" (merge-pathnames p (merge-pathnames "bin/" (or #+ros.init(ros:opt "homedir") *bin-install-base-path*)))))
+
 (defun install-gist (pkg)
   (ppcre:register-groups-bind
    (user filename exe) ("(.+)/((.+)\\.ros)$" pkg)
@@ -51,9 +57,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
        (when (string= (cl-gists:file-name file) filename)
 	 (let ((url (cl-gists:file-raw-url file)))
 	   (download url filename))
-	 (uiop:run-program `("ros" "build" ,filename))
-	 (let ((dist (format nil "~~/.roswell/bin/~a" exe)))
-	   (rename-file exe dist))
+	 (uiop:run-program `("ros" "build" ,filename "-o" ,(r filename)))
 	 (uiop:delete-file-if-exists filename)
 	 (return-from install-gist nil)))))
   (error (make-instance 'not-found)))
@@ -63,25 +67,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     (error (make-instance 'not-ros-script)))
   (unless (probe-file pkg)
     (error (make-instance 'not-found)))
-  (uiop:run-program `("ros" "build" ,pkg))
-  (let* ((exe (ppcre:regex-replace "\\.ros$" pkg ""))
-	 (cmd (ppcre:regex-replace "^.+/(.+)\\.ros$" pkg "\\1"))
-	 (dist (format nil "~~/.roswell/bin/~a" cmd)))
-    (rename-file exe dist)))
+  (let ((exe (ppcre:regex-replace "\\.ros$" pkg ""))
+	(cmd (ppcre:regex-replace "^.+/(.+)\\.ros$" pkg "\\1")))
+    (uiop:run-program `("ros" "build" ,pkg "-o" ,(r cmd)))))
 
 (defun install-http (url)
   (ppcre:register-groups-bind
    (filename exe) ("((([^/]+)\\.ros))" url)
    (download url filename)
-   (uiop:run-program `("ros" "build" ,filename))
-   (let ((dist (format nil "~~/.roswell/bin/~a" exe)))
-     (rename-file exe dist))
+   (uiop:run-program `("ros" "build" ,filename "-o" ,(r exe)))
    (uiop:delete-file-if-exists filename))
   (error (make-instance 'not-found)))
 
 (defun uninstall (pkg)
-  (let ((path (format nil "~~/.roswell/bin/~a" pkg)))
-    (uiop:delete-file-if-exists path)))
+  (mapc #'uiop:delete-file-if-exists (directory (r (format nil "~A.*" pkg)))))
 
 (defun parse-url (url)
   (multiple-value-call
