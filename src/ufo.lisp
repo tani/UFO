@@ -117,11 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	   (install-https path)))))
 
 (defun ufo/remove (name)
-  (let ((path (make-pathname
-	       :directory (pathname-directory roswell/bin)
-	       :name name
-	       :type "")))
-    (uiop:delete-file-if-exists path)))
+  (uiop:delete-file-if-exists (r name)))
 
 (defun ufo/update (url)
   (ufo/install url))
