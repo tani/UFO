@@ -1,132 +1,16 @@
 #!/bin/sh
 #|-*- mode:lisp -*-|#
 #|
-exec ros -L sbcl-bin -Q -- $0 "$@"
+exec ros -Q -- $0 "$@"
 |#
 
-#|
-Copyright (c) 2015 Masaya TANIGUCHI (ta2gch@gmail.com)
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-|#
-
-(ql:quickload
- '(:cl-gists
-   #-ros.init :dexador
-   :uiop
-   :cl-ppcre)
- :silent t)
-
-(define-condition not-found (simple-error) ())
-(define-condition illegal-argument (simple-error)())
-(define-condition not-ros-script (simple-error) ())
-(defvar *bin-install-base-path* (user-homedir-pathname))
-
-(defun download (url dist)
-  #+ros.init(ros:roswell `("roswell-internal-use" "download" ,url ,dist) :interactive nil)
-  #-ros.init
-  (with-open-file (file dist
-			:direction :io
-			:if-does-not-exist :create
-			:if-exists :supersede
-			:element-type '(unsigned-byte 8))
-    (let ((input (dex:get url :want-stream t :force-binary t)))
-      (do ((byte (read-byte input nil nil) (read-byte input nil nil)))
-	  ((not byte))
-	(write-byte byte file)))))
-    
-(defun r (&optional (p ""))
-  (format nil "~A" (merge-pathnames p (merge-pathnames "bin/" (or #+ros.init(ros:opt "homedir") *bin-install-base-path*)))))
-
-(defun install-gist (pkg)
-  (ppcre:register-groups-bind
-   (user filename exe) ("(.+)/((.+)\\.ros)$" pkg)
-   (dolist (gist (cl-gists:list-gists :username user))
-     (dolist (file (cl-gists:gist-files gist))
-       (when (string= (cl-gists:file-name file) filename)
-	 (let ((url (cl-gists:file-raw-url file)))
-	   (download url filename))
-	 (uiop:run-program `("ros" "build" ,filename "-o" ,(r filename)))
-	 (uiop:delete-file-if-exists filename)
-	 (return-from install-gist nil)))))
-  (error (make-instance 'not-found)))
-
-(defun install-file (pkg)
-  (unless (ppcre:scan "\\.ros$" pkg)
-    (error (make-instance 'not-ros-script)))
-  (unless (probe-file pkg)
-    (error (make-instance 'not-found)))
-  (let ((exe (ppcre:regex-replace "\\.ros$" pkg ""))
-	(cmd (ppcre:regex-replace "^.+/(.+)\\.ros$" pkg "\\1")))
-    (uiop:run-program `("ros" "build" ,pkg "-o" ,(r cmd)))))
-
-(defun install-http (url)
-  (ppcre:register-groups-bind
-   (filename exe) ("((([^/]+)\\.ros))" url)
-   (download url filename)
-   (uiop:run-program `("ros" "build" ,filename "-o" ,(r exe)))
-   (uiop:delete-file-if-exists filename))
-  (error (make-instance 'not-found)))
-
-(defun uninstall (pkg)
-  (mapc #'uiop:delete-file-if-exists (directory (r (format nil "~A.*" pkg)))))
-
-(defun parse-url (url)
-  (multiple-value-call
-      (lambda (fst scnd)
-	(declare (ignore fst))
-	(values (elt scnd 0) (elt scnd 1)))
-    (if (ppcre:scan "^(gist|file|https?)://." url)
-	(ppcre:scan-to-strings
-	 "^(gist|file|https?)://(.+)$" url)
-	(progn
-	  (format *error-output* "Unkown Protocol: ~a~%" url)
-	  (uiop:quit 1)))))
-
+(ql:quickload :ufo :silent t)
 (defun main (&rest argv)
   (declare (ignorable argv))
-  (handler-case
-      (progn
-	(unless (= (length argv) 2)
-	  (error (make-instance 'illegal-argument)))
-	(cond ((string= (first argv) "install")
-	       (multiple-value-bind (prot pkg)
-		   (parse-url (second argv))
-		 (cond
-		   ((string= prot "gist")
-		    (install-gist pkg))
-		   ((string= prot "file")
-		    (install-file pkg))
-		   ((string= prot "https")
-		    (install-http (second argv)))
-		   ((string= prot "http")
-		    (install-http (second argv))))))
-	      ((string= (first argv) "uninstall")
-	       (uninstall (second argv)))
-	      (t (error (make-instance 'illegal-argument)))))
-    (not-ros-script ()
-      (format *error-output* "~a is not a Roswell script~%" (second argv))
-      (uiop:quit 1))
-    (illegal-argument ()
-      (format *error-output* "Illeagal Argument: ~{~a ~}~%" argv)
-      (uiop:quit 1))
-    (dex:http-request-failed ()
-      (format *error-output* "Not found: ~a~%" (second argv))
-      (uiop:quit 1))
-    (usocket:ns-host-not-found-error ()
-      (format *error-output* "Not found: ~a~%" (second argv))
-      (uiop:quit 1))
-    (not-found ()
-      (format *error-output* "Not found: ~a~%" (second argv))
-      (uiop:quit 1))))
+  (cond ((string= "install" (first argv))
+	 (ufo:ufo :install (second argv)))
+	((string= "remove" (first argv))
+	 (ufo:ufo :remove (second argv)))
+	((string= "update" (first argv))
+	 (ufo:ufo :update (second argv)))))
+	
