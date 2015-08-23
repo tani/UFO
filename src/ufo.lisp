@@ -30,6 +30,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (defvar *bin-install-base-path* (user-homedir-pathname))
 (defun r (&optional (p ""))
   (format nil "~A" (merge-pathnames p (merge-pathnames "bin/" (or #+ros.init(ros:opt "homedir") *bin-install-base-path*)))))
+(defun tmp (&optional (p ""))
+  (format nil "~A" (merge-pathnames p (merge-pathnames "tmp/" (or #+ros.init(ros:opt "homedir") *bin-install-base-path*)))))
 
 (defun parse-uri (uri)
   (multiple-value-call
@@ -42,7 +44,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	(error (make-instance 'unkown-scheme)))))
 
 (defun download (url dist)
-  #+ros.init(ros:roswell `("roswell-internal-use" "download" ,url ,dist) :interactive nil)
+  #+ros.init
+  (ros:roswell
+   `("roswell-internal-use" "download" ,url ,dist)
+   :interactive nil)
   #-ros.init
   (with-open-file (file dist
 			:direction :io
@@ -61,10 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (defun install-http (path)
   (setq path (pathname path))
   (let ((url (format nil "http://~a" path))
-	(txt (make-pathname
-	      ;:directory (list :absolute "tmp")
-	      :name (pathname-name path)
-	      :type (pathname-type path))))
+	(txt (tmp (file-namestring path))))
     (download url txt)
     (uiop:run-program
      `("ros" "build" ,(namestring txt)
@@ -74,10 +76,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (defun install-https (path)
   (setq path (pathname path))
   (let ((url (format nil "https://~a" (namestring path)))
-	(txt (make-pathname
-	      ;:directory (list :absolute "tmp")
-	      :name (pathname-name path)
-	      :type (pathname-type path))))
+	(txt (tmp (file-namestring path))))
     (download url txt)
     (uiop:run-program
      `("ros" "build" ,(namestring txt)
