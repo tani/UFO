@@ -65,7 +65,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (defun install-http (path)
   (setq path (pathname path))
-  (let ((url (format nil "http://~a" path))
+  (let ((url (format nil "http://~a" (namestring path)))
 	(txt (tmp (file-namestring path))))
     (download url txt)
     (uiop:run-program
