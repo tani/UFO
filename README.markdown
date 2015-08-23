@@ -27,9 +27,11 @@ $ ufo update gist://fukamachi/clhs.ros
 ## Installation
 
 ```shell
+$ cd ~/common-lisp
 $ git clone git://github.com/ta2gch/UFO
 $ cd UFO && ros -l ufo.asd -s ufo
 ```
+*ensure that `~/.roswell/bin` is in the system's search path.*
 
 ## Requirements
 
