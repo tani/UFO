@@ -4,7 +4,7 @@
 exec ros -L sbcl-bin -Q -- $0 "$@"
 |#
 
-(load (merge-pathnames "ufo.asd" *load-pathname*))
+;(load (merge-pathnames "ufo.asd" *load-pathname*))
 (ql:quickload :ufo :silent t)
 (defun main (&rest argv)
   (declare (ignorable argv))
