@@ -14,24 +14,23 @@ $ ufo install file:///home/ta2gch/Downloads/hello.ros
 ### Uninstall *.ros
 
 ```shell
-$ ufo uninstall clhs
+$ ufo remove clhs
 
 ```
 
 ### Update
 
 ```shell
-$ ufo install gist://fukamachi/clhs.ros
-$ ufo install https://raw.githubusercontent.com/ta2gch/UFO/master/ufo.ros # HEAD
-$ ufo install gist://ta2gch/ufo.ros # stable
+$ ufo update gist://fukamachi/clhs.ros
 ```
+
 ## Installation
 
+```shell
+$ git clone git://github.com/ta2gch/UFO
+$ cd UFO && ros -l ufo.asd -s ufo
 ```
-$ cd ~/.roswell/bin
-$ wget https://raw.githubusercontent.com/ta2gch/UFO/master/ufo.ros
-$ ros build ufo.ros && rm ufo.ros
-```
+
 ## Requirements
 
 * [dexador (v0.9.7 or later)](https://github.com/fukamachi/dexador)
