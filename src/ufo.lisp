@@ -143,5 +143,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	     ,(ensure-directories-exist
 	       (merge-pathnames
 		"roswell/ufo"
-		(ql:where-is-system "swank-shell"))))
+		(ql:where-is-system "ufo"))))
 	   :interactive nil))))
