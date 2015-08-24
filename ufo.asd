@@ -25,7 +25,7 @@
   :components ((:module "src"
                 :components ((:file "ufo" :depends-on ("util" "install"))
 			     (:file "install" :depends-on ("build" "util"))
-			     (:file "build")
+			     (:file "build" :depends-on ("util"))
 			     (:file "util"))))
   :description "Roswell Script Installer"
   :long-description

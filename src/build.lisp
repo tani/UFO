@@ -1,6 +1,6 @@
 (in-package :cl)
 (defpackage ufo.build
-  (:use :cl)
+  (:use :cl :ufo.util)
   (:export build))
 (in-package :ufo.build)
 
@@ -14,7 +14,7 @@
 "(sb-ext:save-lisp-and-die \"~a\" 
 :executable t 
 :toplevel (lambda () (apply #'main (rest sb-ext:*posix-argv*))))~%"
-(pathname-name path)))
+(e path)))
 
 (defun build (path)
   (let ((src (cl-fad:with-output-to-temporary-file (tmp)
