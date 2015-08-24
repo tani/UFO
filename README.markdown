@@ -33,6 +33,12 @@ $ cd UFO && ros -l ufo.asd install ufo
 ```
 *ensure that `~/.roswell/bin` is in the system's search path.*
 
+to make static build `ufo`, 
+```
+$ git clone git://github.com/ta2gch/UFO
+$ cd UFO && ros -l bootstrap.lisp
+```
+
 ## Requirements
 
 * [dexador (v0.9.7 or later)](https://github.com/fukamachi/dexador)
