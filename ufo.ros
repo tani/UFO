@@ -14,4 +14,3 @@ exec ros -L sbcl-bin -Q -- $0 "$@"
 	 (ufo:ufo :remove (second argv)))
 	((string= "update" (first argv))
 	 (ufo:ufo :update (second argv)))))
-	

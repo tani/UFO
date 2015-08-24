@@ -20,10 +20,13 @@
   :license "MIT"
   :depends-on (:cl-ppcre
                :cl-gists
+	       :cl-fad
                :dexador)
   :components ((:module "src"
-                :components
-                ((:file "ufo"))))
+                :components ((:file "ufo" :depends-on ("util" "install"))
+			     (:file "install" :depends-on ("build" "util"))
+			     (:file "build")
+			     (:file "util"))))
   :description "Roswell Script Installer"
   :long-description
   #.(with-open-file (stream (merge-pathnames
