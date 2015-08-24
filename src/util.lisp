@@ -9,9 +9,9 @@
 (defun e (&optional (p ""))
   (merge-pathnames (pathname-name p) (directory-namestring p)))
 (defun r (&optional (p ""))
-  (format nil "~A" (merge-pathnames p (merge-pathnames ".ufo/bin/" *bin-install-base-path*))))
+  (format nil "~A" (merge-pathnames p (merge-pathnames ".roswell/bin/" *bin-install-base-path*))))
 (defun tmp (&optional (p ""))
-  (format nil "~A" (merge-pathnames p (merge-pathnames ".ufo/tmp/" (or *bin-install-base-path*)))))
+  (format nil "~A" (merge-pathnames p (merge-pathnames ".roswell/tmp/" (or *bin-install-base-path*)))))
 
 (defun parse-uri (uri)
   (multiple-value-call
