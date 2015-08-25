@@ -44,12 +44,16 @@ $ cd UFO && ros -L sbcl-bin -l bootstrap.lisp
 * [dexador (v0.9.7 or later)](https://github.com/fukamachi/dexador)
 * [Roswell](https://github.com/snmsts/roswell)
 
+## Why 'UFO'
+LISP Aliens fly in a UFO. :smile:
+
+## TODO
+* Quicklisp
+* `ros -l foo.asd install foo`
+
 ## Author
 
 * Masaya TANIGUCHI (ta2gch@gmail.com)
-
-## Why 'UFO'
-LISP Aliens fly in a UFO. :smile:
 
 ## License
 
