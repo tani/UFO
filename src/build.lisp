@@ -20,5 +20,5 @@
   (let ((src (cl-fad:with-output-to-temporary-file (tmp)
 	       (with-open-file (in path)
 		 (build-1 in tmp path t)))))
-    (uiop:run-program (list "ros" "-l" (namestring src) "-q"))
+    (uiop:run-program (list "ros" "-L" "sbcl-bin" "-l" (namestring src) "-q"))
     (delete-file src)))

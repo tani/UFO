@@ -36,7 +36,7 @@ $ cd UFO && ros -l ufo.asd install ufo
 to make static build `ufo`, 
 ```
 $ git clone git://github.com/ta2gch/UFO
-$ cd UFO && ros -l bootstrap.lisp
+$ cd UFO && ros -L sbcl-bin -l bootstrap.lisp
 ```
 
 ## Requirements
