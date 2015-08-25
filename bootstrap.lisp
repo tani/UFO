@@ -2,7 +2,7 @@
 (ql:quickload :ufo)
 (defun main (argv)
   (unless (= 3 (length argv))
-    (format *error-output* "invalid argument: ~a~%" argv)
+    (format *error-output* "invalid argument: ~{~a~}~%" argv)
     (sb-ext:exit))
   (let ((op (second argv)) (uri (third argv)))
     (cond ((string= "install" op)
