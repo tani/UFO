@@ -1,0 +1,12 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+(ql:quickload '(:uiop :ufo) :silent t)
+(defun main (&rest argv)
+  (declare (ignorable argv))
+  (uiop:delete-file-if-exists
+   (merge-pathnames
+    (first argv)
+    (ufo.env:dot-roswell #p"bin/"))))

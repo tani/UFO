@@ -1,0 +1,9 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+(defun main (&rest argv)
+  (declare (ignorable argv))
+  (print "this is help.")
+  (terpri))

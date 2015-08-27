@@ -18,15 +18,11 @@
   :version "0.1"
   :author "Masaya TANIGUCHI"
   :license "MIT"
-  :depends-on (:cl-ppcre
-               :cl-gists
-	       :cl-fad
-               :dexador)
+  :depends-on (:anaphora)
   :components ((:module "src"
-                :components ((:file "ufo" :depends-on ("util" "install"))
-			     (:file "install" :depends-on ("build" "util"))
-			     (:file "build" :depends-on ("util"))
-			     (:file "util"))))
+                :components ((:file "ufo" :depends-on ("env" "addon"))
+			     (:file "addon" :depends-on ("env"))
+			     (:file "env"))))
   :description "Roswell Script Installer"
   :long-description
   #.(with-open-file (stream (merge-pathnames

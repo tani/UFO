@@ -1,0 +1,86 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+(ql:quickload
+ '(:cl-ppcre :cl-gists :ufo)
+ :silent t)
+
+(defun e (&optional (p ""))
+  (merge-pathnames (pathname-name p) (directory-namestring p)))
+(defun r (&optional (p ""))
+  (format nil "~A" (merge-pathnames p (ufo.env:dot-ufo "addon/"))))
+(defun tmp (&optional (p ""))
+  (format nil "~A" (merge-pathnames p (ufo.env:dot-ufo "tmp/"))))
+
+(defun parse-uri (uri)
+  (multiple-value-call
+      (lambda (fst scnd)
+	(declare (ignore fst))
+	(values (elt scnd 0) (elt scnd 1)))
+    (if (ppcre:scan "^(gist|file|https?)://." uri)
+	(ppcre:scan-to-strings
+	 "^(gist|file|https?)://(.+)$" uri)
+	(error "unkown scheme"))))
+
+(defun download (url dist)
+  (ros:roswell
+   `("roswell-internal-use" "download" ,url ,dist)
+   :interactive nil))
+
+(defun install-http (path)
+  (setq path (pathname path))
+  (let ((url (format nil "http://~a" (namestring path)))
+	(txt (tmp (file-namestring path))))
+    (download url txt)
+    (ros:roswell
+     `("build" ,txt "-o" ,(r (pathname-name txt)))
+     :interactive nil)
+    (uiop:delete-file-if-exists txt)))
+
+(defun install-https (path)
+  (setq path (pathname path))
+  (let ((url (format nil "https://~a" (namestring path)))
+	(txt (tmp (file-namestring path))))
+    (download url txt)
+    (ros:roswell
+     `("build" ,txt "-o" ,(r (pathname-name txt)))
+     :interactive nil)
+    (uiop:delete-file-if-exists txt)))
+
+(defun install-gist (path)
+  (setq path (pathname path))
+  (dolist (gist (cl-gists:list-gists
+		 :username (second (pathname-directory path))))
+    (dolist (file (cl-gists:gist-files gist))
+      (when (string= (cl-gists:file-name file)
+		     (file-namestring path))
+	(multiple-value-bind (scheme path)
+	    (parse-uri (cl-gists:file-raw-url file))
+	  (declare (ignore scheme))
+	  (install-https path))
+	(return-from install-gist nil))))
+  (error "not found: ~a" path))
+
+(defun install-file (path)
+  (unless (probe-file path)
+    (error "not found: ~a" path))
+  (ros:roswell
+   `("build" ,path "-o" ,(r (pathname-name (pathname path))))
+   :interactive nil))
+
+(defun main (&rest argv)
+  (declare (ignorable argv))
+  (handler-case
+      (multiple-value-bind
+	    (scheme path) (parse-uri (first argv))
+	(cond ((string= scheme "gist")
+	       (install-gist path))
+	      ((string= scheme "file")
+	       (install-file path))
+	      ((string= scheme "http")
+	       (install-http path))
+	      ((string= scheme "https")
+	       (install-https path))))
+    (error (e) (format *error-output* "~a~%" e))))

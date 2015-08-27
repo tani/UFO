@@ -1,0 +1,9 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+
+(defun main (&rest argv)
+  (declare (ignorable argv))
+  (ros:roswell `("build" ,(first argv)) :interactive nil))
