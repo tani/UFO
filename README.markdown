@@ -24,6 +24,20 @@ $ ufo remove clhs
 $ ufo update gist://fukamachi/clhs.ros
 ```
 
+### Install new addon
+
+```shell
+$ ufo addon-install <addon-url>
+$ ufo addon-install file://~/UFO/addon/extension/build.ros
+```
+
+### Remove addon
+
+```shell
+$ ufo addon-remove <addon-name>
+$ ufo addon-remove build
+```
+
 ## Installation
 
 ```shell
@@ -33,15 +47,8 @@ $ cd UFO && ros -l ufo.asd install ufo
 ```
 *ensure that `~/.roswell/bin` is in the system's search path.*
 
-to make static build `ufo`, 
-```
-$ git clone git://github.com/ta2gch/UFO
-$ cd UFO && ros -L sbcl-bin -l bootstrap.lisp
-```
-
 ## Requirements
 
-* [dexador (v0.9.7 or later)](https://github.com/fukamachi/dexador)
 * [Roswell](https://github.com/snmsts/roswell)
 
 ## Why 'UFO'
