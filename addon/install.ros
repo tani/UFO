@@ -19,9 +19,9 @@ exec ros -Q -- $0 "$@"
       (lambda (fst scnd)
 	(declare (ignore fst))
 	(values (elt scnd 0) (elt scnd 1)))
-    (if (ppcre:scan "^(gist|file|https?)://." uri)
+    (if (ppcre:scan "^(ql|gist|file|https?)://." uri)
 	(ppcre:scan-to-strings
-	 "^(gist|file|https?)://(.+)$" uri)
+	 "^(ql|gist|file|https?)://(.+)$" uri)
 	(error "unkown scheme"))))
 
 (defun download (url dist)
@@ -70,6 +70,9 @@ exec ros -Q -- $0 "$@"
    `("build" ,path "-o" ,(r (pathname-name (pathname path))))
    :interactive nil))
 
+(defun install-ql (path)
+  (ros:roswell `("install" ,path) :interactive nil))
+
 (defun main (&rest argv)
   (declare (ignorable argv))
   (handler-case
@@ -77,6 +80,8 @@ exec ros -Q -- $0 "$@"
 	    (scheme path) (parse-uri (first argv))
 	(cond ((string= scheme "gist")
 	       (install-gist path))
+	      ((string= scheme "ql")
+	       (install-ql path))
 	      ((string= scheme "file")
 	       (install-file path))
 	      ((string= scheme "http")
