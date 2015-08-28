@@ -5,11 +5,14 @@ exec ros -Q -- $0 "$@"
 |#
 
 (ql:quickload '(:quri :ufo :cl-gists) :silent t)
+
 (defun url-body (url)
-  (format
-   nil "~a/~a"
-   (quri:uri-host url)
-   (quri:uri-path url)))
+  (if (quri:uri-path url)
+      (format nil "~a~a"
+	      (quri:uri-host url)
+	      (quri:uri-path url))
+      (format nil "~a"
+	      (quri:uri-host url))))
 
 (defun build (ros out)
   (ros:roswell `("build" ,ros "-o" ,out)
