@@ -3,7 +3,25 @@
 #|
 exec ros -Q -- $0 "$@"
 |#
+(ql:quickload :ufo :silent t)
 (defun main (&rest argv)
   (declare (ignorable argv))
-  (print "this is help.")
+  (princ
+"
+Roswell Script Installer
+
+Usage:
+
+ufo <subcmd> <args>:
+
+<subcmd>:
+
+")
+  (loop
+    :with d := (make-pathname
+		:name :wild
+		:type :wild
+		:directory `(:absolute ,(namestring (ufo.env:dot-ufo #p"addon/"))))
+    :for f :in (directory d) :do
+      (format t "    ~a <args>~%" (file-namestring f)))
   (terpri))
