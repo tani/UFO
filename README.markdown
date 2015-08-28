@@ -18,13 +18,18 @@ $ ufo install file:///home/ta2gch/Downloads/hello.ros
 
 ```shell
 $ ufo remove clhs
-
 ```
 
 ### Update
 
 ```shell
 $ ufo update gist://fukamachi/clhs.ros
+```
+
+### Install Quicklisp
+
+```shell
+$ ufo install ql://<package-name>
 ```
 
 ### Install new addon
@@ -40,6 +45,7 @@ $ ufo addon-install file://~/UFO/addon/extension/build.ros
 $ ufo addon-remove <addon-name>
 $ ufo addon-remove build
 ```
+
 
 ## Installation
 
