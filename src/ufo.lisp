@@ -22,9 +22,13 @@
 
 (defun ufo (subcmd &rest argv)
   (setup)
-  (acond
-   ((subcmd-p subcmd) 
-    (uiop:run-program (cons it argv)
-		      :output t
-		      :error-output *error-output*))
-   (t (error "unkown sub-command : ~a~%" subcmd))))
+  (handler-case 
+      (acond
+       ((subcmd-p subcmd) 
+	(uiop:run-program
+	 (cons it argv)
+	 :output t :error-output *error-output*))
+       (t (format *error-output* "unkown subcommand~%")
+	  (uiop:quit -1)))
+    (uiop:subprocess-error () 1)))
+  

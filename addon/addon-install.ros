@@ -7,13 +7,13 @@ exec ros -Q -- $0 "$@"
 (ql:quickload '(:quri :ufo :cl-gists) :silent t)
 
 (defun url-body (url)
-  (if (quri:uri-path url)
-      (format nil "~a~a"
-	      (quri:uri-host url)
-	      (quri:uri-path url))
-      (format nil "~a"
-	      (quri:uri-host url))))
-  
+  (cond ((and (quri:uri-path url) (quri:uri-host url))
+	 (format nil "~a~a"
+		 (quri:uri-host url)
+		 (quri:uri-path url)))
+	((quri:uri-host url) (quri:uri-host url))
+	((quri:uri-path url) (quri:uri-path url))))
+
 (defun build (ros out)
   (ros:roswell `("build" ,ros "-o" ,out)
 	       :interactive nil))
@@ -23,6 +23,8 @@ exec ros -Q -- $0 "$@"
 	       :interactive nil))
 
 (defun install-http (url)
+  (unless (quri:uri-path url)
+    (error 'uiop:subprocess-error))
   (download (quri:render-uri url)
 	    (merge-pathnames
 	     (file-namestring (quri:uri-path url))
@@ -38,12 +40,15 @@ exec ros -Q -- $0 "$@"
   (install-http url))
 
 (defun install-file (url)
+  (unless (probe-file (url-body url))
+    (error 'uiop:subprocess-error))
   (build  (url-body url)
 	  (merge-pathnames
 	   (pathname-name (url-body url))
 	   (ufo.env:dot-ufo #p"addon/"))))
 
 (defun install-gist (url)
+  (unless (quri:uri-path url) (error 'uiop:subprocess-error))
   (let ((username (quri:uri-host url))
 	(filename (file-namestring (quri:uri-path url))))
     (dolist (gist (cl-gists:list-gists :username username))
@@ -51,18 +56,23 @@ exec ros -Q -- $0 "$@"
 	(when (string= (cl-gists:file-name file) filename)
 	  (install-https (quri:uri (cl-gists:file-raw-url file)))
 	  (return-from install-gist nil))))
-    (error "not found~%")))
+    (error 'uiop:subprocess-error)))
 
 (defun main (&rest argv)
   (declare (ignorable argv))
-  (dolist (url (mapcar #'quri:uri argv))
-    (cond
-      ((string= (quri:uri-scheme url) "gist")
-       (install-gist url))
-      ((string= (quri:uri-scheme url) "file")
-       (install-file url))
-      ((string= (quri:uri-scheme url) "http")
-       (install-http url))
-      ((string= (quri:uri-scheme url) "https")
-       (install-https url))
-      (t (error "unkown scheme~%")))))
+  (handler-case
+      (dolist (url (mapcar #'quri:uri argv))
+	(cond
+	  ((string= (quri:uri-scheme url) "gist")
+	   (install-gist url))
+	  ((string= (quri:uri-scheme url) "file")
+	   (install-file url))
+	  ((string= (quri:uri-scheme url) "http")
+	   (install-http url))
+	  ((string= (quri:uri-scheme url) "https")
+	   (install-https url))
+	  (t (error 'uiop:subprocess-error))))
+    (uiop:subprocess-error ()
+      (format *error-output* "Install process failed!~%")
+      (uiop:quit -1))))
+  
