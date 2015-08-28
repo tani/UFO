@@ -18,12 +18,12 @@
   :version "0.1"
   :author "Masaya TANIGUCHI"
   :license "MIT"
-  :depends-on (:anaphora)
+  :depends-on (:anaphora :dexador)
   :components ((:module "src"
-                :components ((:file "ufo" :depends-on ("env" "addon"))
-			     (:file "addon" :depends-on ("env"))
-			     (:file "env"))))
-  :description "Roswell Script Installer"
+                :components ((:file "ufo" :depends-on ("util" "addon"))
+			     (:file "addon" :depends-on ("util"))
+			     (:file "util"))))
+  :description "Roswell Script Manager"
   :long-description
   #.(with-open-file (stream (merge-pathnames
                              #p"README.markdown"
