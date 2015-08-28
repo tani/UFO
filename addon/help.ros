@@ -21,7 +21,7 @@ ufo <subcmd> <args>:
     :with d := (make-pathname
 		:name :wild
 		:type :wild
-		:directory `(:absolute ,(namestring (ufo.env:dot-ufo #p"addon/"))))
+		:directory `(:absolute ,(namestring (ufo.util:dot-ufo #p"addon/"))))
     :for f :in (directory d) :do
       (format t "    ~a <args>~%" (file-namestring f)))
   (terpri))

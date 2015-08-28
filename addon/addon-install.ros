@@ -18,23 +18,19 @@ exec ros -Q -- $0 "$@"
   (ros:roswell `("build" ,ros "-o" ,out)
 	       :interactive nil))
 
-(defun download (url dist)
-  (ros:roswell `("roswell-internal-use" "download" ,url ,dist)
-	       :interactive nil))
-
 (defun install-http (url)
   (unless (quri:uri-path url)
     (error 'uiop:subprocess-error))
-  (download (quri:render-uri url)
+  (ufo.util:download (quri:render-uri url)
 	    (merge-pathnames
 	     (file-namestring (quri:uri-path url))
-	     (ufo.env:dot-ufo #p"tmp/")))
+	     (ufo.util:dot-ufo #p"tmp/")))
   (build (merge-pathnames
 	  (file-namestring (quri:uri-path url))
-	  (ufo.env:dot-ufo #p"tmp/"))
+	  (ufo.util:dot-ufo #p"tmp/"))
 	 (merge-pathnames
 	  (pathname-name (quri:uri-path url))
-	  (ufo.env:dot-ufo #p"addon/"))))
+	  (ufo.util:dot-ufo #p"addon/"))))
 
 (defun install-https (url)
   (install-http url))
@@ -45,7 +41,7 @@ exec ros -Q -- $0 "$@"
   (build  (url-body url)
 	  (merge-pathnames
 	   (pathname-name (url-body url))
-	   (ufo.env:dot-ufo #p"addon/"))))
+	   (ufo.util:dot-ufo #p"addon/"))))
 
 (defun install-gist (url)
   (unless (quri:uri-path url) (error 'uiop:subprocess-error))

@@ -10,4 +10,4 @@ exec ros -Q -- $0 "$@"
     (uiop:delete-file-if-exists
      (merge-pathnames
       arg
-      (ufo.env:dot-ufo #p"addon/")))))
+      (ufo.util:dot-ufo #p"addon/")))))

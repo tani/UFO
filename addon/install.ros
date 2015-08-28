@@ -4,7 +4,7 @@
 exec ros -Q -- $0 "$@"
 |#
 
-(ql:quickload '(:quri :ufo :cl-gists) :silent t)
+(ql:quickload '(:quri :ufo :cl-gists :ZIP) :silent t)
 
 (defun url-body (url)
   (cond ((and (quri:uri-path url) (quri:uri-host url))
@@ -18,22 +18,18 @@ exec ros -Q -- $0 "$@"
   (ros:roswell `("build" ,ros "-o" ,out)
 	       :interactive nil))
 
-(defun download (url dist)
-  (ros:roswell `("roswell-internal-use" "download" ,url ,dist)
-	       :interactive nil))
-
 (defun install-http (url)
   (unless (quri:uri-path url) (error 'uiop:subprocess-error))
-  (download (quri:render-uri url)
+  (ufo.util:download (quri:render-uri url)
 	    (merge-pathnames
 	     (file-namestring (quri:uri-path url))
-	     (ufo.env:dot-ufo #p"tmp/")))
+	     (ufo.util:dot-ufo #p"tmp/")))
   (build (merge-pathnames
 	  (file-namestring (quri:uri-path url))
-	  (ufo.env:dot-ufo #p"tmp/"))
+	  (ufo.util:dot-ufo #p"tmp/"))
 	 (merge-pathnames
 	  (pathname-name (quri:uri-path url))
-	  (ufo.env:dot-roswell #p"bin/"))))
+	  (ufo.util:dot-roswell #p"bin/"))))
 
 (defun install-https (url)
   (install-http url))
@@ -44,7 +40,7 @@ exec ros -Q -- $0 "$@"
   (build  (url-body url)
 	  (merge-pathnames
 	   (pathname-name (url-body url))
-	   (ufo.env:dot-roswell #p"bin/"))))
+	   (ufo.util:dot-roswell #p"bin/"))))
 
 (defun install-gist (url)
   (unless (quri:uri-path url)
@@ -62,21 +58,27 @@ exec ros -Q -- $0 "$@"
   (ros:roswell `("install" ,(quri:uri-host url))
 	       :interactive nil))
 
+(defun install-gh (url)
+  (let ((src (quri:make-uri
+	      :scheme "https"
+	      :host "github.com"
+	      :path (format nil "/~a/archive/master.zip" (url-body url))))
+	(zip (ufo.util:dot-ufo "tmp/master.zip"))
+	(cl (merge-pathnames #p"common-lisp/" (user-homedir-pathname))))
+    (ufo.util:download src zip)
+    (zip:unzip zip cl)))
+
 (defun main (&rest argv)
   (declare (ignorable argv))
   (handler-case
       (dolist (url (mapcar #'quri:uri argv))
 	(cond
-	  ((string= (quri:uri-scheme url) "gist")
-	   (install-gist url))
-	  ((string= (quri:uri-scheme url) "file")
-	   (install-https url))
-	  ((string= (quri:uri-scheme url) "ql")
-	   (install-ql url))
-	  ((string= (quri:uri-scheme url) "http")
-	   (install-http url))
-	  ((string= (quri:uri-scheme url) "https")
-	   (install-https url))
+	  ((string= (quri:uri-scheme url) "gist")(install-gist url))
+	  ((string= (quri:uri-scheme url) "file")(install-https url))
+	  ((string= (quri:uri-scheme url) "ql")(install-ql url))
+	  ((string= (quri:uri-scheme url) "http")(install-http url))
+	  ((string= (quri:uri-scheme url) "https")(install-https url))
+	  ((string= (quri:uri-scheme url) "gh")(install-gh url))
 	  (t (error 'uiop:subprocess-error))))
     (uiop:subprocess-error ()
       (format *error-output* "Install process failed!~%")
