@@ -44,7 +44,6 @@ $ ufo addon-remove build
 $ cd ~/common-lisp
 $ git clone git://github.com/ta2gch/UFO
 $ cd UFO && ros -l ufo.asd install ufo
-$ ufo-setup
 ```
 *ensure that `~/.roswell/bin` is in the system's search path.*
 

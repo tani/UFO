@@ -1,9 +1,0 @@
-#!/bin/sh
-#|-*- mode:lisp -*-|#
-#|
-exec ros -Q -- $0 "$@"
-|#
-(ql:quickload :ufo :silent t)
-(defun main (&rest argv)
-  (declare (ignorable argv))
-  (ufo:setup))

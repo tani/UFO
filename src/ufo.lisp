@@ -21,8 +21,8 @@
       (ufo.addon:addon (merge-pathnames addon addon-dir)))))
 
 (defun ufo (subcmd &rest argv)
+  (setup)
   (acond
    ((subcmd-p subcmd) 
     (uiop:run-program (cons it argv) :output t))
    (t (error "unkown sub-command : ~a~%" subcmd))))
-

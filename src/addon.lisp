@@ -10,5 +10,5 @@
 	 (out (merge-pathnames
 	       (pathname-name ros)
 	       (ufo.env:dot-ufo #p"addon/"))))
-    (ignore-errors
-     (ros:roswell `("build" ,ros "-o" ,out) :interactive nil))))
+    (unless (probe-file out)
+      (ros:roswell `("build" ,ros "-o" ,out) :interactive nil))))
