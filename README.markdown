@@ -1,4 +1,6 @@
 # UFO
+[![Build Status](https://travis-ci.org/ta2gch/UFO.svg?branch=master)](https://travis-ci.org/ta2gch/UFO)
+
 Roswell script installer
 
 ## Usage
