@@ -5,47 +5,15 @@
 Roswell script installer
 
 ## Usage
-### Install *.ros
-
-```shell
-$ ufo install gist://fukamachi/clhs.ros
-$ ufo install http://example.com/sample/test.ros
-$ ufo install https://example.com/sample/test.ros
-$ ufo install file:///home/ta2gch/Downloads/hello.ros
+See [Wiki](https://github.com/ta2gch/UFO/wiki)
+### Install Roswell Script
 ```
-
-### Uninstall *.ros
-
-```shell
-$ ufo remove clhs
+$ ufo install gist://ta2gch/repl.ros
 ```
-
-### Update
-
-```shell
-$ ufo update gist://fukamachi/clhs.ros
+### Install Addons
 ```
-
-### Install Quicklisp
-
-```shell
-$ ufo install ql://<package-name>
+$ ufo install gist://ta2gch/repl.ros
 ```
-
-### Install new addon
-
-```shell
-$ ufo addon-install <addon-url>
-$ ufo addon-install file://~/UFO/addon/extension/build.ros
-```
-
-### Remove addon
-
-```shell
-$ ufo addon-remove <addon-name>
-$ ufo addon-remove build
-```
-
 
 ## Installation
 
@@ -62,10 +30,6 @@ $ cd UFO && ros -l ufo.asd install ufo
 
 ## Why 'UFO'
 LISP Aliens fly in a UFO. :smile:
-
-## TODO
-* Quicklisp
-* `ros -l foo.asd install foo`
 
 ## Author
 
