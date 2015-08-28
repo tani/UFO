@@ -12,7 +12,7 @@ $ ufo install gist://ta2gch/repl.ros
 ```
 ### Install Addons
 ```
-$ ufo install gist://ta2gch/repl.ros
+$ ufo addon-install gist://ta2gch/repl.ros
 ```
 
 ## Installation
