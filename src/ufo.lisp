@@ -1,17 +1,17 @@
 (in-package #:cl-user)
 (defpackage ufo
-  (:use :cl :anaphora :uiop :ufo.env :ufo.addon)
+  (:use :cl :anaphora :uiop :ufo.util :ufo.addon)
   (:export :ufo :setup))
 (in-package #:ufo)
 
 (defun subcmd-p (subcmd)
   (let* ((ros (make-pathname :name subcmd))
-	 (cmd-path (merge-pathnames ros (ufo.env:dot-ufo #p"addon/"))))
+	 (cmd-path (merge-pathnames ros (ufo.util:dot-ufo #p"addon/"))))
     (if (probe-file cmd-path) cmd-path nil)))
 
 (defun setup ()
-  (ensure-directories-exist (ufo.env:dot-ufo #p"addon/"))
-  (ensure-directories-exist (ufo.env:dot-ufo #p"tmp/"))
+  (ensure-directories-exist (ufo.util:dot-ufo #p"addon/"))
+  (ensure-directories-exist (ufo.util:dot-ufo #p"tmp/"))
   (let ((addon-dir (merge-pathnames
 		    "addon/"
 		    (ql:where-is-system :ufo))))

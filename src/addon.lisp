@@ -1,6 +1,6 @@
 (in-package #:cl-user)
 (defpackage ufo.addon
-  (:use :cl :ufo.env)
+  (:use :cl :ufo.util)
   (:export :addon))
 (in-package #:ufo.addon)
 
@@ -9,6 +9,6 @@
   (let* ((ros (first argv))
 	 (out (merge-pathnames
 	       (pathname-name ros)
-	       (ufo.env:dot-ufo #p"addon/"))))
+	       (ufo.util:dot-ufo #p"addon/"))))
     (unless (probe-file out)
       (ros:roswell `("build" ,ros "-o" ,out) :interactive nil))))
