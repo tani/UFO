@@ -4,7 +4,13 @@
 exec ros -Q -- $0 "$@"
 |#
 
-(ql:quickload '(:quri :ufo :cl-gists :ZIP) :silent t)
+(ql:quickload
+ '(:quri
+   :ufo
+   :cl-gists
+   :cl-fad
+   :trivial-download
+   :ZIP) :silent t)
 
 (defun url-body (url)
   (cond ((and (quri:uri-path url) (quri:uri-host url))
@@ -19,11 +25,13 @@ exec ros -Q -- $0 "$@"
 	       :interactive nil))
 
 (defun install-http (url)
-  (unless (quri:uri-path url) (error 'uiop:subprocess-error))
-  (ufo.util:download (quri:render-uri url)
-	    (merge-pathnames
-	     (file-namestring (quri:uri-path url))
-	     (ufo.util:dot-ufo #p"tmp/")))
+  (unless (and (quri:uri-path url) (quri:uri-host url))
+    (error 'uiop:subprocess-error))
+  (trivial-download:download
+   (quri:render-uri url)
+   (merge-pathnames
+    (file-namestring (quri:uri-path url))
+    (ufo.util:dot-ufo #p"tmp/")))
   (build (merge-pathnames
 	  (file-namestring (quri:uri-path url))
 	  (ufo.util:dot-ufo #p"tmp/"))
@@ -43,7 +51,7 @@ exec ros -Q -- $0 "$@"
 	   (ufo.util:dot-roswell #p"bin/"))))
 
 (defun install-gist (url)
-  (unless (quri:uri-path url)
+  (unless (and (quri:uri-path url) (quri:uri-host url))
     (error 'uiop:subprocess-error))
   (let ((username (quri:uri-host url))
 	(filename (file-namestring (quri:uri-path url))))
@@ -55,17 +63,24 @@ exec ros -Q -- $0 "$@"
     (error 'uiop:subprocess-error)))
 
 (defun install-ql (url)
+  (unless (and (not (quri:uri-path url)) (quri:uri-host url))
+    (error 'uiop:subprocess-error))
   (ros:roswell `("install" ,(quri:uri-host url))
 	       :interactive nil))
 
 (defun install-gh (url)
-  (let ((src (quri:make-uri
-	      :scheme "https"
-	      :host "github.com"
-	      :path (format nil "/~a/archive/master.zip" (url-body url))))
-	(zip (ufo.util:dot-ufo "tmp/master.zip"))
-	(cl (merge-pathnames #p"common-lisp/" (user-homedir-pathname))))
-    (ufo.util:download src zip)
+  (unless (and (quri:uri-path url) (quri:uri-host url))
+    (error 'uiop:subprocess-error))
+  (let* ((src (quri:make-uri
+	       :scheme "https"
+	       :host "github.com"
+	       :path (format nil "/~a/archive/master.zip"(url-body url))))
+	 (zip (ufo.util:dot-ufo "tmp/master.zip"))
+	 (cl (merge-pathnames #p"common-lisp/" (user-homedir-pathname)))
+	 (dir (merge-pathnames
+	       (format nil "~a-master/" (quri:uri-path url)) cl)))
+    (cl-fad:delete-directory-and-files dir :if-does-not-exist :ignore)
+    (trivial-download:download (quri:render-uri src) zip)
     (zip:unzip zip cl)))
 
 (defun main (&rest argv)
