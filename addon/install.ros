@@ -79,9 +79,8 @@ exec ros -Q -- $0 "$@"
 	 (cl (merge-pathnames #p"common-lisp/" (user-homedir-pathname)))
 	 (dir (merge-pathnames
 	       (format nil "~a-master/" (quri:uri-path url)) cl)))
-    (cl-fad:delete-directory-and-files dir :if-does-not-exist :ignore)
     (trivial-download:download (quri:render-uri src) zip)
-    (zip:unzip zip cl)))
+    (zip:unzip zip cl :if-exist :overwrite)))
 
 (defun main (&rest argv)
   (declare (ignorable argv))
@@ -96,5 +95,5 @@ exec ros -Q -- $0 "$@"
 	  ((string= (quri:uri-scheme url) "gh")(install-gh url))
 	  (t (error 'uiop:subprocess-error))))
     (uiop:subprocess-error ()
-      (format *error-output* "Install process failed!~%")
+      (format *error-output* "~%~%== Install process failed! ==~%~%")
       (uiop:quit -1))))

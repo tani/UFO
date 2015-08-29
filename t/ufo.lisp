@@ -17,7 +17,8 @@
 			   (ql:where-is-system :ufo))))))
 (ok (not (ufo:ufo "addon-remove" "build")))
 (ok (not (ufo:ufo "help")))
-(ok (ufo:ufo "install" "ql://ta2gc/adsa"))
+
+(ok (ufo:ufo "install" "ql://ta2gc/aaa"))
 (ok (ufo:ufo "install" "g://ta2gch/aaa"))
 (ok (ufo:ufo "install" "gh://ta2gch/aaa"))
 (ok (ufo:ufo "install" "gist://ta2gch/aaa/bbb"))
