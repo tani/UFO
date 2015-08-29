@@ -17,14 +17,19 @@
 			   (ql:where-is-system :ufo))))))
 (ok (not (ufo:ufo "addon-remove" "build")))
 (ok (not (ufo:ufo "help")))
-
-(ok (ufo:ufo "install" "gist://ta2gch/repl"))
-(ok (ufo:ufo "install" "file://ta2gch/repl"))
-(ok (ufo:ufo "update" "http://ta2gch/repl"))
+(ok (ufo:ufo "install" "ql://ta2gc/adsa"))
+(ok (ufo:ufo "install" "g://ta2gch/aaa"))
+(ok (ufo:ufo "install" "gh://ta2gch/aaa"))
+(ok (ufo:ufo "install" "gist://ta2gch/aaa/bbb"))
+(ok (ufo:ufo "install" "gh://aaa"))
+(ok (ufo:ufo "install" "gh://"))
+(ok (ufo:ufo "install" "gist://ta2gch/aaa"))
+(ok (ufo:ufo "install" "file://ta2gch/aaa"))
+(ok (ufo:ufo "update" "http://ta2gch/aaa"))
 (ok (ufo:ufo "addon-install"
 	     (format nil "file://~a"
 		     (merge-pathnames
-		      #p"addon/extension/build"
+		      #p"addon/extension/aaa"
 		      (ql:where-is-system :ufo)))))
 
 (finalize)
