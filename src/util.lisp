@@ -7,6 +7,7 @@
 (defun dot-ufo (path)
   (merge-pathnames
    path (merge-pathnames #p".ufo/" (user-homedir-pathname))))
+
 (defun dot-roswell (path)
   (merge-pathnames
    path (merge-pathnames #p".roswell/" (user-homedir-pathname))))

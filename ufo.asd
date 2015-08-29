@@ -18,7 +18,7 @@
   :version "0.1"
   :author "Masaya TANIGUCHI"
   :license "MIT"
-  :depends-on (:anaphora :dexador)
+  :depends-on (:anaphora)
   :components ((:module "src"
                 :components ((:file "ufo" :depends-on ("util" "addon"))
 			     (:file "addon" :depends-on ("util"))

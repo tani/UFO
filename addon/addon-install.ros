@@ -4,7 +4,11 @@
 exec ros -Q -- $0 "$@"
 |#
 
-(ql:quickload '(:quri :ufo :cl-gists) :silent t)
+(ql:quickload
+ '(:quri
+   :ufo
+   :trivial-download
+   :cl-gists) :silent t)
 
 (defun url-body (url)
   (cond ((and (quri:uri-path url) (quri:uri-host url))
@@ -19,12 +23,13 @@ exec ros -Q -- $0 "$@"
 	       :interactive nil))
 
 (defun install-http (url)
-  (unless (quri:uri-path url)
+  (unless (and (quri:uri-host url) (quri:uri-path url))
     (error 'uiop:subprocess-error))
-  (ufo.util:download (quri:render-uri url)
-	    (merge-pathnames
-	     (file-namestring (quri:uri-path url))
-	     (ufo.util:dot-ufo #p"tmp/")))
+  (trivial-download:download
+   (quri:render-uri url)
+   (merge-pathnames
+    (file-namestring (quri:uri-path url))
+    (ufo.util:dot-ufo #p"tmp/")))
   (build (merge-pathnames
 	  (file-namestring (quri:uri-path url))
 	  (ufo.util:dot-ufo #p"tmp/"))
@@ -44,7 +49,8 @@ exec ros -Q -- $0 "$@"
 	   (ufo.util:dot-ufo #p"addon/"))))
 
 (defun install-gist (url)
-  (unless (quri:uri-path url) (error 'uiop:subprocess-error))
+  (unless (and (quri:uri-host url) (quri:uri-path url))
+    (error 'uiop:subprocess-error))
   (let ((username (quri:uri-host url))
 	(filename (file-namestring (quri:uri-path url))))
     (dolist (gist (cl-gists:list-gists :username username))
