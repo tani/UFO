@@ -80,7 +80,7 @@ exec ros -Q -- $0 "$@"
 	 (dir (merge-pathnames
 	       (format nil "~a-master/" (quri:uri-path url)) cl)))
     (trivial-download:download (quri:render-uri src) zip)
-    (zip:unzip zip cl :if-exist :overwrite)))
+    (zip:unzip zip cl :if-exists :overwrite)))
 
 (defun main (&rest argv)
   (declare (ignorable argv))
