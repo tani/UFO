@@ -20,6 +20,9 @@ exec ros -Q -- $0 "$@"
 	((quri:uri-host url) (quri:uri-host url))
 	((quri:uri-path url) (quri:uri-path url))))
 
+(defun url-file (url)
+  (file-namestring (quri:uri-path url)))
+
 (defun build (ros out)
   (ros:roswell `("build" ,ros "-o" ,out)
 	       :interactive nil))
@@ -30,7 +33,8 @@ exec ros -Q -- $0 "$@"
   (trivial-download:download
    (quri:render-uri url)
    (merge-pathnames
-    (file-namestring (quri:uri-path url))
+    ;;(file-namestring (quri:uri-path url))
+    (url-file url)
     (ufo.util:dot-ufo #p"tmp/")))
   (build (merge-pathnames
 	  (file-namestring (quri:uri-path url))
@@ -54,7 +58,8 @@ exec ros -Q -- $0 "$@"
   (unless (and (quri:uri-path url) (quri:uri-host url))
     (error 'uiop:subprocess-error))
   (let ((username (quri:uri-host url))
-	(filename (file-namestring (quri:uri-path url))))
+	(filename (url-file url)))
+    ;;(file-namestring (quri:uri-path url))))
     (dolist (gist (cl-gists:list-gists :username username))
       (dolist (file (cl-gists:gist-files gist))
 	(when (string= (cl-gists:file-name file) filename)
@@ -78,7 +83,13 @@ exec ros -Q -- $0 "$@"
 	 (zip (ufo.util:dot-ufo "tmp/master.zip"))
 	 (cl (merge-pathnames #p"common-lisp/" (user-homedir-pathname))))
     (trivial-download:download (quri:render-uri src) zip)
-    (zip:unzip zip cl :if-exists :supersede)))
+    (zip:unzip zip cl :if-exists :supersede)
+    (let ((asd (merge-pathnames
+		(format nil "~a-master/~a.asd"
+			(url-file url)
+			(url-file url)) cl)))
+      (ros:roswell `("-l" ,asd "install" ,(url-file url))
+		   :interactive nil))))
 
 (defun main (&rest argv)
   (declare (ignorable argv))
