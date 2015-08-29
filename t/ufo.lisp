@@ -3,7 +3,8 @@
   (:use :cl :ufo :prove))
 (in-package :ufo-test)
 (ql:quickload :cl-fad)
-(cl-fad:delete-directory-and-files #p"~/.ufo/")
+(when (cl-fad:directory-exists-p #p"~/.ufo")
+  (cl-fad:delete-directory-and-files #p"~/.ufo/"))
 (plan nil)
 
 (ok (not (ufo:ufo "install" "gist://ta2gch/repl.ros")))
