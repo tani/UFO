@@ -2,7 +2,8 @@
 (defpackage ufo-test
   (:use :cl :ufo :prove))
 (in-package :ufo-test)
-
+(ql:quickload :cl-fad)
+(cl-fad:delete-directory-and-files #p"~/.ufo/")
 (plan nil)
 
 (ok (not (ufo:ufo "install" "gist://ta2gch/repl.ros")))
@@ -18,6 +19,7 @@
 (ok (not (ufo:ufo "addon-remove" "build")))
 (ok (not (ufo:ufo "help")))
 
+(ok (ufo:ufo "unkown"))
 (ok (ufo:ufo "install" "ql://ta2gc/aaa"))
 (ok (ufo:ufo "install" "g://ta2gch/aaa"))
 (ok (ufo:ufo "install" "gh://ta2gch/aaa"))

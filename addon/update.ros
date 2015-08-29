@@ -29,7 +29,7 @@ exec ros -Q -- $0 "$@"
 
 (defun install-http (url)
   (unless (and (quri:uri-path url) (quri:uri-host url))
-    (error 'uiop:subprocess-error))
+    (error "Invalid URL"))
   (trivial-download:download
    (quri:render-uri url)
    (merge-pathnames
@@ -48,7 +48,7 @@ exec ros -Q -- $0 "$@"
 
 (defun install-file (url)
   (unless (probe-file (url-body url))
-    (error 'uiop:subprocess-error))
+    (error "Invalid URL"))
   (build  (url-body url)
 	  (merge-pathnames
 	   (pathname-name (url-body url))
@@ -56,7 +56,7 @@ exec ros -Q -- $0 "$@"
 
 (defun install-gist (url)
   (unless (and (quri:uri-path url) (quri:uri-host url))
-    (error 'uiop:subprocess-error))
+    (error "Invalid URL"))
   (let ((username (quri:uri-host url))
 	(filename (url-file url)))
     ;;(file-namestring (quri:uri-path url))))
@@ -69,13 +69,13 @@ exec ros -Q -- $0 "$@"
 
 (defun install-ql (url)
   (unless (and (not (quri:uri-path url)) (quri:uri-host url))
-    (error 'uiop:subprocess-error))
+    (error "Invalid URL"))
   (ros:roswell `("install" ,(quri:uri-host url))
 	       :interactive nil))
 
 (defun install-gh (url)
   (unless (and (quri:uri-path url) (quri:uri-host url))
-    (error 'uiop:subprocess-error))
+    (error "Invalid URL"))
   (let* ((src (quri:make-uri
 	       :scheme "https"
 	       :host "github.com"
@@ -102,7 +102,5 @@ exec ros -Q -- $0 "$@"
 	  ((string= (quri:uri-scheme url) "http")(install-http url))
 	  ((string= (quri:uri-scheme url) "https")(install-https url))
 	  ((string= (quri:uri-scheme url) "gh")(install-gh url))
-	  (t (error 'uiop:subprocess-error))))
-    (uiop:subprocess-error ()
-      (format *error-output* "~%~%== Install process failed! ==~%~%")
-      (uiop:quit -1))))
+	  (t (error "Invalid Schemes"))))
+    (error (e) (princ e *error-output*)(terpri)(uiop:quit -1))))

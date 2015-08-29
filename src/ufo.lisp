@@ -28,7 +28,6 @@
 	(uiop:run-program
 	 (cons it argv)
 	 :output t :error-output *error-output*))
-       (t (format *error-output* "unkown subcommand~%")
-	  (uiop:quit -1)))
+       (t (format *error-output* "unkown subcommand ") 1))
     (uiop:subprocess-error () 1)))
   

@@ -8,6 +8,4 @@ exec ros -Q -- $0 "$@"
   (declare (ignorable argv))
   (dolist (arg argv)
     (uiop:delete-file-if-exists
-     (merge-pathnames
-      arg
-      (ufo.util:dot-roswell #p"bin/")))))
+     (merge-pathnames arg (ufo.util:dot-roswell #p"bin/")))))
