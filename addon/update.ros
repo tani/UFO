@@ -59,7 +59,6 @@ exec ros -Q -- $0 "$@"
     (error "Invalid URL"))
   (let ((username (quri:uri-host url))
 	(filename (url-file url)))
-    ;;(file-namestring (quri:uri-path url))))
     (dolist (gist (cl-gists:list-gists :username username))
       (dolist (file (cl-gists:gist-files gist))
 	(when (string= (cl-gists:file-name file) filename)
@@ -84,12 +83,10 @@ exec ros -Q -- $0 "$@"
 	 (cl (merge-pathnames #p"common-lisp/" (user-homedir-pathname))))
     (trivial-download:download (quri:render-uri src) zip)
     (zip:unzip zip cl :if-exists :supersede)
-    (let ((asd (merge-pathnames
-		(format nil "~a-master/~a.asd"
-			(url-file url)
-			(url-file url)) cl)))
-      (ros:roswell `("-l" ,asd "install" ,(url-file url))
-		   :interactive nil))))
+    (let* ((dir(merge-pathnames(format nil"~a-master/"(url-file url))cl))
+	   (asd(merge-pathnames(format nil"~a.asd"(url-file url))dir)))
+      (when(cl-fad:directory-exists-p(merge-pathnames #p"roswell/"dir))
+	(ros:roswell`("-l",asd"install",(url-file url))nil nil)))))
 
 (defun main (&rest argv)
   (declare (ignorable argv))
