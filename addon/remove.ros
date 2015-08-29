@@ -3,9 +3,24 @@
 #|
 exec ros -Q -- $0 "$@"
 |#
-(ql:quickload '(:uiop :ufo) :silent t)
+(ql:quickload '(:uiop :cl-fad :ufo) :silent t)
 (defun main (&rest argv)
   (declare (ignorable argv))
   (dolist (arg argv)
+    (let*((cl(merge-pathnames #p"common-lisp/"(user-homedir-pathname)))
+	  (dir(merge-pathnames(format nil"~a-master/"arg) cl))
+	  (ros(merge-pathnames #p"roswell/"dir)))
+      (dolist (file (cl-fad:list-directory ros))
+	(uiop:delete-file-if-exists
+	 (merge-pathnames
+	  (pathname-name file)
+	  (ufo.util:dot-roswell #p"bin/")))
+	(uiop:delete-file-if-exists
+	 (merge-pathnames
+	  (pathname-name file)
+	  (ufo.util:dot-ufo #p"addon/"))))
+      (when (cl-fad:directory-exists-p dir)
+	(cl-fad:delete-directory-and-files dir)))
     (uiop:delete-file-if-exists
      (merge-pathnames arg (ufo.util:dot-roswell #p"bin/")))))
+
