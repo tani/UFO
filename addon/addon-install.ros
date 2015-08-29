@@ -41,7 +41,7 @@ exec ros -Q -- $0 "$@"
 	  (ufo.util:dot-ufo #p"tmp/"))
 	 (merge-pathnames
 	  (pathname-name (quri:uri-path url))
-	  (ufo.util:dot-roswell #p"bin/"))))
+	  (ufo.util:dot-ufo #p"addon/"))))
 
 (defun install-https (url)
   (install-http url))
@@ -52,7 +52,7 @@ exec ros -Q -- $0 "$@"
   (build  (url-body url)
 	  (merge-pathnames
 	   (pathname-name (url-body url))
-	   (ufo.util:dot-roswell #p"bin/"))))
+	   (ufo.util:dot-ufo #p"addon/"))))
 
 (defun install-gist (url)
   (unless (and (quri:uri-path url) (quri:uri-host url))
@@ -72,22 +72,6 @@ exec ros -Q -- $0 "$@"
   (ros:roswell `("install" ,(quri:uri-host url))
 	       :interactive nil))
 
-(defun install-gh (url)
-  (unless (and (quri:uri-path url) (quri:uri-host url))
-    (error "Invalid URL"))
-  (let* ((src (quri:make-uri
-	       :scheme "https"
-	       :host "github.com"
-	       :path (format nil "/~a/archive/master.zip"(url-body url))))
-	 (zip (ufo.util:dot-ufo "tmp/master.zip"))
-	 (cl (merge-pathnames #p"common-lisp/" (user-homedir-pathname))))
-    (trivial-download:download (quri:render-uri src) zip)
-    (zip:unzip zip cl :if-exists :supersede)
-    (let* ((dir(merge-pathnames(format nil"~a-master/"(url-file url))cl))
-	   (asd(merge-pathnames(format nil"~a.asd"(url-file url))dir)))
-      (when(cl-fad:directory-exists-p(merge-pathnames #p"roswell/"dir))
-	(ros:roswell`("-l",asd"install",(url-file url))nil nil)))))
-
 (defun main (&rest argv)
   (declare (ignorable argv))
   (handler-case
@@ -98,6 +82,5 @@ exec ros -Q -- $0 "$@"
 	  ((string= (quri:uri-scheme url) "ql")(install-ql url))
 	  ((string= (quri:uri-scheme url) "http")(install-http url))
 	  ((string= (quri:uri-scheme url) "https")(install-https url))
-	  ((string= (quri:uri-scheme url) "gh")(install-gh url))
 	  (t (error "Invalid Schemes"))))
     (error (e) (princ e *error-output*)(terpri)(uiop:quit -1))))
