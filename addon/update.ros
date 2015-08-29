@@ -86,7 +86,7 @@ exec ros -Q -- $0 "$@"
       (dolist (url (mapcar #'quri:uri argv))
 	(cond
 	  ((string= (quri:uri-scheme url) "gist")(install-gist url))
-	  ((string= (quri:uri-scheme url) "file")(install-https url))
+	  ((string= (quri:uri-scheme url) "file")(install-file url))
 	  ((string= (quri:uri-scheme url) "ql")(install-ql url))
 	  ((string= (quri:uri-scheme url) "http")(install-http url))
 	  ((string= (quri:uri-scheme url) "https")(install-https url))
