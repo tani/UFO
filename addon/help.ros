@@ -8,7 +8,7 @@ exec ros -Q -- $0 "$@"
   (declare (ignorable argv))
   (princ
 "
-Roswell Script Installer
+Roswell Script Manager
 
 Usage:
 
