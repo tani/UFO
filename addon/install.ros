@@ -80,7 +80,7 @@ exec ros -Q -- $0 "$@"
 	       :host "github.com"
 	       :path (format nil "/~a/archive/master.zip"(url-body url))))
 	 (zip (ufo.util:dot-ufo "tmp/master.zip"))
-	 (cl (merge-pathnames #p"common-lisp/" (user-homedir-pathname))))
+	 (cl (merge-pathnames #p"local-projects/"ql:*quicklisp-home*)))
     (trivial-download:download (quri:render-uri src) zip)
     (zip:unzip zip cl :if-exists :supersede)
     (let* ((dir(merge-pathnames(format nil"~a-master/"(url-file url))cl))
