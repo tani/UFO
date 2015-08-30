@@ -14,13 +14,13 @@ exec ros -Q -- $0 "$@"
 	(uiop:delete-file-if-exists
 	 (merge-pathnames
 	  (pathname-name file)
-	  (ufo.util:dot-roswell #p"bin/")))
+	  (ufo:dot-roswell #p"bin/")))
 	(uiop:delete-file-if-exists
 	 (merge-pathnames
 	  (pathname-name file)
-	  (ufo.util:dot-ufo #p"addon/"))))
+	  (ufo:dot-ufo #p"addon/"))))
       (when (cl-fad:directory-exists-p dir)
 	(cl-fad:delete-directory-and-files dir)))
     (uiop:delete-file-if-exists
-     (merge-pathnames arg (ufo.util:dot-roswell #p"bin/")))))
+     (merge-pathnames arg (ufo:dot-roswell #p"bin/")))))
 

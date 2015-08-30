@@ -7,10 +7,10 @@
   (cl-fad:delete-directory-and-files #p"~/.ufo/"))
 (plan nil)
 
-(ok (not (ufo:ufo "install" "gist://ta2gch/repl.ros")))
+(ok (not (ufo:ufo "install" "gist://fukamachi/clhs.ros")))
 (ok (not (ufo:ufo "install" "ql://cl-gists")))
-(ok (not (ufo:ufo "remove" "repl")))
-(ok (not (ufo:ufo "update" "gist://ta2gch/repl.ros")))
+(ok (not (ufo:ufo "remove" "clhs")))
+(ok (not (ufo:ufo "update" "gist://fukamachi/clhs.ros")))
 (ok (not (ufo:ufo "install" "gh://ta2gch/cl-pov")))
 (ok (not (ufo:ufo "addon-install"
 		  (format nil "file://~a"

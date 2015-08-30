@@ -4,13 +4,7 @@
 exec ros -Q -- $0 "$@"
 |#
 
-(ql:quickload
- '(:quri
-   :ufo
-   :cl-gists
-   :cl-fad
-   :trivial-download
-   :ZIP) :silent t)
+(ql:quickload '(:quri :ufo :cl-gists :cl-fad :trivial-download :ZIP) :silent t)
 
 (defun url-body (url)
   (cond ((and (quri:uri-path url) (quri:uri-host url))
@@ -29,34 +23,33 @@ exec ros -Q -- $0 "$@"
 
 (defun install-http (url)
   (unless (and (quri:uri-path url) (quri:uri-host url))
-    (error "Invalid URL"))
+    (error "Invalid URL. "))
   (trivial-download:download
    (quri:render-uri url)
    (merge-pathnames
-    ;;(file-namestring (quri:uri-path url))
     (url-file url)
-    (ufo.util:dot-ufo #p"tmp/")))
+    (ufo:dot-ufo #p"tmp/")))
   (build (merge-pathnames
 	  (file-namestring (quri:uri-path url))
-	  (ufo.util:dot-ufo #p"tmp/"))
+	  (ufo:dot-ufo #p"tmp/"))
 	 (merge-pathnames
 	  (pathname-name (quri:uri-path url))
-	  (ufo.util:dot-roswell #p"bin/"))))
+	  (ufo:dot-roswell #p"bin/"))))
 
 (defun install-https (url)
   (install-http url))
 
 (defun install-file (url)
   (unless (probe-file (url-body url))
-    (error "Invalid URL"))
+    (error "Invalid URL. "))
   (build  (url-body url)
 	  (merge-pathnames
 	   (pathname-name (url-body url))
-	   (ufo.util:dot-roswell #p"bin/"))))
+	   (ufo:dot-roswell #p"bin/"))))
 
 (defun install-gist (url)
   (unless (and (quri:uri-path url) (quri:uri-host url))
-    (error "Invalid URL"))
+    (error "Invalid URL. "))
   (let ((username (quri:uri-host url))
 	(filename (url-file url)))
     (dolist (gist (cl-gists:list-gists :username username))
@@ -68,18 +61,18 @@ exec ros -Q -- $0 "$@"
 
 (defun install-ql (url)
   (unless (and (not (quri:uri-path url)) (quri:uri-host url))
-    (error "Invalid URL"))
+    (error "Invalid URL. "))
   (ros:roswell `("install" ,(quri:uri-host url))
 	       :interactive nil))
 
 (defun install-gh (url)
   (unless (and (quri:uri-path url) (quri:uri-host url))
-    (error "Invalid URL"))
+    (error "Invalid URL. "))
   (let* ((src (quri:make-uri
 	       :scheme "https"
 	       :host "github.com"
 	       :path (format nil "/~a/archive/master.zip"(url-body url))))
-	 (zip (ufo.util:dot-ufo "tmp/master.zip"))
+	 (zip (ufo:dot-ufo "tmp/master.zip"))
 	 (cl (merge-pathnames #p"local-projects/"ql:*quicklisp-home*)))
     (trivial-download:download (quri:render-uri src) zip)
     (zip:unzip zip cl :if-exists :supersede)
