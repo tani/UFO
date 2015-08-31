@@ -1,8 +1,18 @@
 (in-package #:cl-user)
 (defpackage ufo
-  (:use :cl :anaphora :uiop :ufo.util :ufo.addon)
+  (:use :cl :uiop :ufo.util :ufo.addon)
   (:export :ufo :setup :dot-ufo :dot-roswell))
 (in-package #:ufo)
+
+(defmacro acond (&body pattern)
+  (let ((b (gensym)))
+    `(block ,b
+       ,@(loop for p in pattern
+	       for test = (first p)
+	       for body = (rest p)
+	       collect
+	       `(let ((it ,test))
+		  (when it ,@body (return-from ,b)))))))
 
 (defun subcmd-p (subcmd)
   (let* ((ros (make-pathname :name subcmd))
@@ -21,10 +31,9 @@
 (defun ufo (subcmd &rest argv)
   (setup)
   (handler-case 
-      (acond
-       ((subcmd-p subcmd) 
-	(run-program
-	 (cons it argv)
+      (ufo.util:acond
+       ((subcmd-p subcmd)
+	(run-program (cons it argv)
 	 :output t :error-output *error-output*))
        (t (princ "unkown subcommand") t))
     (error (e) (princ e) (terpri) t)))
