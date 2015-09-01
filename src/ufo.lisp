@@ -22,10 +22,7 @@
   (handler-case 
       (let ((cmd (subcmd-p subcmd)))
 	(if cmd
-	    #+sbcl
-	    (progn (sb-ext:run-program cmd argv :output t :input t) nil)
-	    #-sbcl
-	    (uiop:run-program cmd argv :output t :error-output t :input t)
+	    (uiop:run-program (cons cmd argv) :output t :error-output t)
 	    (progn (princ "unkown subcommand") t)))
     (error (e) (princ e) (terpri) t)))
   
