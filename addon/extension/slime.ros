@@ -1,0 +1,11 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+(ql:quickload :uiop :silent t)
+(defun main (&rest argv)
+  (declare (ignorable argv))
+  (uiop:run-program
+   '("emacs" "-e" "slime"
+             "-e" "delete-other-windows")))
