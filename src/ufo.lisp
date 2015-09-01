@@ -23,7 +23,7 @@
       (let ((cmd (subcmd-p subcmd)))
 	(if cmd
 	    #+sbcl
-	    (sb-ext:run-program cmd argv :output t :input t)
+	    (progn (sb-ext:run-program cmd argv :output t :input t) nil)
 	    #-sbcl
 	    (uiop:run-program cmd argv :output t :error-output t :input t)
 	    (progn (princ "unkown subcommand") t)))
