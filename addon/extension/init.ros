@@ -4,24 +4,32 @@
 exec ros -Q -- $0 "$@"
 |#
 (ql:quickload :cl-project :silent t)
-(let (name author email description license depends-on)
-  (defun make-project ()
-    (princ "author: ")(finish-output)(setq author (read-line))
-    (princ "email: ")(finish-output)(setq email (read-line))
-    (princ "description: ")(finish-output)(setq description (read-line))
-    (princ "license: ")(finish-output)(setq license (read-line))
-    (princ "depends-on: ")(finish-output)(setq depends-on (read-line))
-    (cl-project:make-project
-     name
-     :author author
-     :email email
-     :description description
-     :licese license
-     :depends-on (read-from-string depends-on)))
-  (defun main (&rest argv)
-    (declare (ignorable argv))
-    (cond ((and (= 2 (length argv)) (string= "-p" (first argv)))
-	   (setq name (second argv)) (make-project))
-	  ((= 1 (length argv))
-	   (ros:roswell `("init" ,(first argv)) :interactive nil))
-	  (t (format *error-output* "invalid argument!") (uiop:quit 1)))))
+
+(defvar name nil)
+(defvar author nil)
+(defvar email nil)
+(defvar description nil)
+(defvar license nil)
+(defvar depends-on nil)
+
+(defun make-project ()
+  (princ "author: ")(finish-output)(setq author (read-line))
+  (princ "email: ")(finish-output)(setq email (read-line))
+  (princ "description: ")(finish-output)(setq description (read-line))
+  (princ "license: ")(finish-output)(setq license (read-line))
+  (princ "depends-on: ")(finish-output)(setq depends-on (read-line))
+  (cl-project:make-project
+   name
+   :author author
+   :email email
+   :description description
+   :licese license
+   :depends-on (read-from-string depends-on)))
+
+(defun main (&rest argv)
+  (declare (ignorable argv))
+  (cond ((and (= 2 (length argv)) (string= "-p" (first argv)))
+	 (setq name (second argv)) (make-project))
+	((= 1 (length argv))
+	 (ros:roswell `("init" ,(first argv)) :interactive nil))
+	(t (format *error-output* "invalid argument!") (uiop:quit 1))))
