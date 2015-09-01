@@ -5,6 +5,11 @@
 ## Description
 **UFO** is a Roswell script manager.
 
+you can install following utilities via **UFO**.
+- [chls.ros](https://gist.github.com/fukamachi/3510ea1609c1b52830c2) -- opening HyperSpec page describing a given symbol in the default browser.
+- [lem.ros](https://gist.github.com/peccu/b1db8bf3f26d0b7c31d1) --  launch lem from shell.
+- etc ... 
+
 ## Features
 ### Easy to Install and Execute.
 You can install Roswell Script on internet,
