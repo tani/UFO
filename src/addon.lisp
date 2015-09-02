@@ -8,5 +8,5 @@
   (let* ((ros (first argv))
 	 (out (merge-pathnames (pathname-name ros) (dot-ufo #p"addon/"))))
     (unless (probe-file out)
-      (run-program `("ros" "build",(namestring ros)"-o",(namestring out))
+      (run-program `("ros" "-L sbcl-bin" "build",(namestring ros)"-o",(namestring out))
 		   :output t :error-output t))))
