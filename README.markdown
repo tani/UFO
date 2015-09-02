@@ -43,11 +43,10 @@ $ ufo update gh://ta2gch/cl-pov
 $ ufo remove cl-pov
 ```
 
-#### Generate Roswell Script or CommonLisp Project
+#### Generate Roswell Script
 subcommand is `init`.
 
 - `ufo init <file-name>` generate temprate of Roswell Script
-- `ufo init -p <project-name>` generate temprate of CommonLisp Project
 
 ## Usage
 
