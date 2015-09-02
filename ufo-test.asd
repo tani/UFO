@@ -12,6 +12,7 @@
   :author "Masaya TANIGUCHI"
   :license "GPLv3"
   :depends-on (:ufo
+	       :cl-fad
                :prove)
   :components ((:module "t"
                 :components

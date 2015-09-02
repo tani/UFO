@@ -2,7 +2,7 @@
 (defpackage ufo-test
   (:use :cl :ufo :prove))
 (in-package :ufo-test)
-(ql:quickload :cl-fad)
+
 (when (cl-fad:directory-exists-p #p"~/.ufo")
   (cl-fad:delete-directory-and-files #p"~/.ufo/"))
 (plan nil)
@@ -16,7 +16,7 @@
 		  (format nil "file://~a"
 			  (merge-pathnames
 			   #p"addon/extension/build.ros"
-			   (ql:where-is-system :ufo))))))
+			   (asdf:system-source-directory :ufo))))))
 (ok (not (ufo:ufo "addon-remove" "build")))
 (ok (not (ufo:ufo "help")))
 
@@ -34,6 +34,6 @@
 	     (format nil "file://~a"
 		     (merge-pathnames
 		      #p"addon/extension/aaa"
-		      (ql:where-is-system :ufo)))))
+		      (asdf:system-source-directory :ufo)))))
 
 (finalize)
