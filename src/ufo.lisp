@@ -1,6 +1,6 @@
 (in-package #:cl-user)
 (defpackage ufo
-  (:use :cl :ufo.util :ufo.addon)
+  (:use :cl :asdf :ufo.util :ufo.addon)
   (:export :ufo :setup :dot-ufo :dot-roswell))
 (in-package #:ufo)
 
@@ -12,7 +12,7 @@
 (defun setup ()
   (ensure-directories-exist (dot-ufo #p"addon/"))
   (ensure-directories-exist (dot-ufo #p"tmp/"))
-  (let ((addon-dir(merge-pathnames "addon/"(ql:where-is-system :ufo))))
+  (let ((addon-dir(merge-pathnames "addon/"(asdf:system-source-directory :ufo))))
     (dolist (addon '("addon-install.ros" "addon-remove.ros"
 		     "install.ros" "remove.ros" "update.ros" "help.ros"))
       (addon (merge-pathnames addon addon-dir)))))
