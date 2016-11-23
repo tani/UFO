@@ -2,6 +2,10 @@
 [![Build Status](https://travis-ci.org/ta2gch/UFO.svg?branch=master)](https://travis-ci.org/ta2gch/UFO)
 [![Coverage Status](https://coveralls.io/repos/ta2gch/UFO/badge.svg?branch=master)](https://coveralls.io/r/ta2gch/UFO)
 
+This project was DEPRECATED. you can use `ros install <Github Repo>/<Project>`.
+
+Thanks for your stars. :smile:
+
 ## Description
 **UFO** is a Roswell script manager.
 
