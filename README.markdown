@@ -27,7 +27,7 @@ UFO has mercurial style _schemes extension_.
 
 `gist://example.com/sample.com` , `file:///path/to/roswell/script/test.ros`,etc ...
 
-Off cause, you can use `http://` and `https://`.
+Of course, you can use `http://` and `https://`.
 
 ### Addons
 UFO have a self enhancement system, _addons_.
