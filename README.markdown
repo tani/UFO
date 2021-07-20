@@ -93,9 +93,6 @@ $ cd UFO && ros -l ufo.asd install ufo
 
 * [Roswell](https://github.com/snmsts/roswell)
 
-## Why 'UFO'
-LISP Aliens fly in a UFO. :smile:
-
 ## Author
 
 * Masaya TANIGUCHI (ta2gch@gmail.com)
